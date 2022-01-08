@@ -7,7 +7,7 @@ using UnityEngine.SceneManagement;
 public class LoadingManager : MonoBehaviour
 {
     public Slider loadingBar;
-
+    
     private void Start()
     {
         loadingBar.value = 0;

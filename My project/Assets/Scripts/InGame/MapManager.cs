@@ -26,13 +26,40 @@ public class Node
 
 public class MapManager : MonoBehaviour
 {
-    //Node [,] PojangArr = new Node[41, 32];
+    //Node [,] PojangArr = new Node[41, 32]; -> Define으로 이동 22.01.07
+
+    public GameObject cookiePref;
 
     void Start()
     {
         //text 맵파일 불러오고, Node 2차원 배열 초기화
         GetMap("Pojang");
         Debug.Log("맵 불러오기 완료");
+
+        //Pojang맵에 쿠키 배치 22.01.08
+        Cookies(T.PojangArr);
+        Debug.Log("쿠키 배치 완료");
+    }
+
+    //모든 길에 쿠키 배치 22.01.08
+    public void Cookies(Node[,] map)
+    {
+        GameObject parentObj = new GameObject();
+        parentObj.name = "Cookies";
+
+        for(int i=0;i<map.GetLength(0);i++)
+        {
+            for(int j=0;j<map.GetLength(1);j++)
+            {
+                if(!map[i,j].wall)
+                {
+                    GameObject tmp = Instantiate(cookiePref, new Vector3(i, j, 0), Quaternion.identity);
+                    tmp.name = "Cookies(" + i + ", " + j + ")";
+                    tmp.gameObject.transform.parent = parentObj.transform;
+
+                }
+            }
+        }
     }
 
     //name에 해당하는 맵을 불러온 후, Node화 하여 초기화하는 메서드
