@@ -1,0 +1,88 @@
+*.class
+
+.idea/
+.gradle/
+build
+gradle
+logs
+
+test/
+idl/*.bat
+gradlew
+gradlew.bat
+settings.gradle
+
+# 이 .gitignore 파일은 Unity 프로젝트 디렉토리의 루트에 있어야합니다.
+#
+# https://github.com/github/gitignore/blob/master/Unity.gitignore에서 최신 정보를 얻으십시오.
+#
+[Ll]ibrary/
+[Tt]emp/
+[Oo]bj/
+[Bb]uild/
+[Bb]uilds/
+[Ll]ogs/
+[Uu]ser[Ss]ettings/
+
+# MemoryCaptures는 크기가 과도해질 수 있습니다.
+# 또한 매우 민감한 데이터를 포함 할 수 있습니다.
+[Mm]emoryCaptures/
+
+# 자산 메타 데이터는 해당 자산도 무시되는 경우에만 무시해야합니다.
+![Aa]ssets/**/*.meta
+
+# 자산 저장소 도구 플러그인을 무시하려면이 줄의 주석 처리를 제거하십시오.
+# [Aa]ssets/AssetStoreTools*
+
+# 자동 생성 된 Jetbrains Rider 플러그인
+[Aa]ssets/Plugins/Editor/JetBrains*
+
+# Visual Studio 캐시 디렉터리
+.vs/
+
+# Visual Code 캐시 디렉터리
+.vscode/
+
+# Gradle 캐시 디렉토리
+.gradle/
+
+# 자동 생성 된 VS / MD / Consulo 솔루션 및 프로젝트 파일
+ExportedObj/
+.consulo/
+*.csproj
+*.unityproj
+*.sln
+*.suo
+*.tmp
+*.user
+*.userprefs
+*.pidb
+*.booproj
+*.svd
+*.pdb
+*.mdb
+*.opendb
+*.VC.db
+
+# Unity3D 생성 메타 파일
+*.pidb.meta
+*.pdb.meta
+*.mdb.meta
+
+# 충돌 보고서에 Unity3D 생성 파일
+sysinfo.txt
+
+# 빌드
+*.apk
+*.aab
+*.unitypackage
+
+# Crashlytics 생성 파일
+crashlytics-build.properties
+
+# 패킹 된 주소 지정 가능
+[Aa]ssets/[Aa]ddressable[Aa]ssets[Dd]ata/*/*.bin*
+
+# 임시 자동 생성 Android 자산
+[Aa]ssets/[Ss]treamingAssets/aa.meta
+[Aa]ssets/[Ss]treamingAssets/aa/*
