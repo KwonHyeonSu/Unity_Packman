@@ -14,23 +14,13 @@ public class Player : Charactor
     }
 
     //상태기계 클래스객체
-    private StateMachine stateMachine;
+    public StateMachine stateMachine;
     
     //각 상태에 따른 행동 state를 보관
     private Dictionary<PlayerState, IState> dicState = new Dictionary<PlayerState, IState>();
-    // Start is called before the first frame update
     public override void Start()
     {
         base.Start();
-
-        //초기 지정
-        currentPos = new Vector2Int(21,8);
-        this.transform.position = new Vector3(21,8,0);
-
-        //상태
-        IState wait = new StateWait();
-        IState run = new StateRun();
-        IState die = new StateDie();
 
         dicState.Add(PlayerState.Wait, wait);
         dicState.Add(PlayerState.Run, run);
@@ -41,19 +31,21 @@ public class Player : Charactor
 
     public override void Init()
     {
-        base.Init();
-        beginPos = new Vector2Int(21, 8);
+        beginPos = new Vector2Int(20, 8);
         currentPos = beginPos;
         speed = 0.3f;
+
+        base.Init();
     }
 
     void Update()
-    {
-        Move();
+    {   
+        //움직임 상태일 때
+        if(stateMachine.CurrentState == run)
+            Move();
     }
 
-    //움직이는 상태가 아닐 때 MoveTo()를 수행한다.
-    
+    // isMove == false일 때 MoveTo()를 수행한다.
     public void Move()
     {
         if(!isMove)
@@ -105,5 +97,25 @@ public class Player : Charactor
     }
 
 
+    //충돌 메서드
+    private void OnTriggerEnter2D(Collider2D other) {
+        //쿠키 먹었을 때
+        if(other.gameObject.tag == "cookie")
+        {
+            other.gameObject.SetActive(false);
+            T.score += 5;
+        }
+
+        else if(other.gameObject.tag == "enemy")
+        {
+            
+        }
+    }
+
+    //상태 적용 메서드 - 22.01.09
+    public void SetStateThis(IState state)
+    {
+        stateMachine.SetState(state);
+    }
 }
 

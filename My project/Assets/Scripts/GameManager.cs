@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
-
     #region 싱글톤
     public static GameManager instance = null;
 
@@ -35,4 +34,6 @@ public class GameManager : MonoBehaviour
     }
 
     #endregion
+
+    
 }

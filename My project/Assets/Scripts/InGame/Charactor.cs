@@ -21,12 +21,20 @@ public class Charactor : MonoBehaviour
     protected bool isMove = false;
     protected float speed;
 
+    //상태 관련
+    public IState wait = new StateWait();
+    public IState run = new StateRun();
+    public IState die = new StateDie();
+    protected IState fear_first = new StateFear_First();
+    protected IState fear_last = new StateFear_Last();
+
     //애니메이션
     [HideInInspector]
     public Animator animator;
 
     public virtual void Start()
     {
+        
         Init();
     }
 
@@ -43,6 +51,8 @@ public class Charactor : MonoBehaviour
         //애니메이션
         animator = this.GetComponent<Animator>();
         animator.Play("Down");
+
+        transform.position = new Vector2(beginPos.x, beginPos.y);
     }
 
 }

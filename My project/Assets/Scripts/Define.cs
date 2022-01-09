@@ -1,5 +1,15 @@
 using UnityEngine;
 
+//게임 상태
+public enum GameState
+{
+    Pause = 0,
+    Ready = 1,
+    Playing = 2,
+    End = 3
+
+}
+
 //방향 정의
 public enum Direction
 {
@@ -12,7 +22,18 @@ public enum Direction
 //3차원 움직임 구현을 위한 방향 벡터화 및 2차원 노드 맵 접근성을 위하여
 public static class T
 {
+    //맵
     public static Node [,] PojangArr = new Node[41, 32];
+
+
+    //점수 및 스테이지, 목숨
+    public static int score;
+    public static int stage;
+    public static int life;
+
+    //게임 상태
+    public static GameState currentGameState = GameState.Pause;
+
     public static Vector2Int Direction2D(Direction dir)
     {
         Vector2Int re = Vector2Int.zero;
