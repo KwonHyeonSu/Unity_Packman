@@ -11023,10 +11023,7 @@ MonoBehaviour:
   Panel_Pause: {fileID: 133743317}
   txt_score: {fileID: 748653915}
   txt_stage: {fileID: 1912479437}
-  Obj_life:
-  - {fileID: 1867182921}
-  - {fileID: 1409204271}
-  - {fileID: 825786822}
+  Obj_life: []
 --- !u!4 &1677097861
 Transform:
   m_ObjectHideFlags: 0

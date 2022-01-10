@@ -29,7 +29,7 @@ settings.gradle
 [Mm]emoryCaptures/
 
 # 자산 메타 데이터는 해당 자산도 무시되는 경우에만 무시해야합니다.
-![Aa]ssets/**/*.meta
+#[Aa]ssets/**/*.meta
 
 # 자산 저장소 도구 플러그인을 무시하려면이 줄의 주석 처리를 제거하십시오.
 # [Aa]ssets/AssetStoreTools*
@@ -65,9 +65,9 @@ ExportedObj/
 *.VC.db
 
 # Unity3D 생성 메타 파일
-*.pidb.meta
-*.pdb.meta
-*.mdb.meta
+#*.pidb.meta
+#*.pdb.meta
+#*.mdb.meta
 
 # 충돌 보고서에 Unity3D 생성 파일
 sysinfo.txt
