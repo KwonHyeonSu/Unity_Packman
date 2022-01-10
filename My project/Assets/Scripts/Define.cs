@@ -23,6 +23,7 @@ public enum Direction
 public static class T
 {
     //맵
+    public static Node [,] CurrentMap; //22.01.10 
     public static Node [,] PojangArr = new Node[41, 32];
 
 

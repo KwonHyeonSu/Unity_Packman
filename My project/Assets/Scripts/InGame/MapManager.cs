@@ -32,7 +32,9 @@ public class MapManager : MonoBehaviour
 
     void Start()
     {
-        //text 맵파일 불러오고, Node 2차원 배열 초기화
+        //Pojang - text 맵파일 불러오고, Node 2차원 배열 초기화 22-01-10
+        T.CurrentMap = T.PojangArr;
+        
         GetMap("Pojang");
         Debug.Log("맵 불러오기 완료");
 

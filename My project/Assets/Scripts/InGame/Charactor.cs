@@ -34,7 +34,6 @@ public class Charactor : MonoBehaviour
 
     public virtual void Start()
     {
-        
         Init();
     }
 

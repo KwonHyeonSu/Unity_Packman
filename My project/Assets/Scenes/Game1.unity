@@ -1575,11 +1575,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2392803257171707535, guid: 75fc7d94f9108d145b611082225ebc49, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 24.41
+      value: 22
       objectReference: {fileID: 0}
     - target: {fileID: 2392803257171707535, guid: 75fc7d94f9108d145b611082225ebc49, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 13
+      value: 16
       objectReference: {fileID: 0}
     - target: {fileID: 2392803257171707535, guid: 75fc7d94f9108d145b611082225ebc49, type: 3}
       propertyPath: m_LocalPosition.z
@@ -11023,7 +11023,10 @@ MonoBehaviour:
   Panel_Pause: {fileID: 133743317}
   txt_score: {fileID: 748653915}
   txt_stage: {fileID: 1912479437}
-  Obj_life: []
+  Obj_life:
+  - {fileID: 1867182921}
+  - {fileID: 1409204271}
+  - {fileID: 825786822}
 --- !u!4 &1677097861
 Transform:
   m_ObjectHideFlags: 0

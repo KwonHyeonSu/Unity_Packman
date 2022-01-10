@@ -20,6 +20,8 @@ public class Game_Pojang : MonoBehaviour
 
     void Start()
     {
+        
+
         Panel_Pause.SetActive(false);
 
         //나중에 수정하기
@@ -40,7 +42,7 @@ public class Game_Pojang : MonoBehaviour
         
     }
     
-
+    //Ready() - 게임 시작 전, 변수 할당 22.01.09
     void Ready()
     {
         //플레이어 할당
@@ -88,6 +90,8 @@ public class Game_Pojang : MonoBehaviour
         Debug.Log("게임 대기중... 아무 키나 입력하세요");
     }
 
+
+    //Playing() - 게임 시작 후 처리
     void Playing()
     {
         if(T.currentGameState == GameState.Ready)
