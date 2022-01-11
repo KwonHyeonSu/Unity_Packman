@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class LobbyManager : MonoBehaviour
 {
+    //ui를 가지고 있는 모든 게임 오브젝트
     public GameObject [] arr;
 
     void Start()

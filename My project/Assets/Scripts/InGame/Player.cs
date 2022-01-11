@@ -5,6 +5,8 @@ using UnityEngine;
 public class Player : Charactor
 {
 
+    public bool Invincible;
+
     //상태 정리
     private enum PlayerState
     {
@@ -36,7 +38,7 @@ public class Player : Charactor
     {
         beginPos = new Vector2Int(20, 8);
         currentPos = beginPos;
-        speed = 0.1f;
+        initSpeed = 0.1f;
 
         base.Init();
     }
@@ -53,7 +55,7 @@ public class Player : Charactor
     {
         if(!isMove)
         {
-            StartCoroutine(MoveTo());
+            moveCoroutine = StartCoroutine(MoveTo());
         }
     }
 
@@ -117,13 +119,30 @@ public class Player : Charactor
 
         }
 
+        //경찰랑 부딪혔을 때 - 22.01.11
         else if(other.gameObject.tag == "enemy")
         {
-            
+            var e = other.gameObject.GetComponent<Enemy>();
+
+
+            //일반 상태(달리기)일 경우 
+            if(e.stateMachine.CurrentState == e.run)
+            {
+                if(!Invincible)
+                    game_Pojang.LifeDiscount(); //목숨 까기
+            }
+
+            //플레이어가 먹을 수 있을 경우 - enemy가 Frightened상태일 경우
+            if(e.stateMachine.CurrentState == e.frightend)
+            {
+                e.SetStateThis(e.eaten); //적 상태 변화
+                game_Pojang.Score_Up(); //점수 올리기
+            }
         }
 
         
     }
+
 
     //상태 적용 메서드 - 22.01.09
     public void SetStateThis(IState state)

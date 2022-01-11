@@ -8,7 +8,7 @@ public class Raymond : Enemy
     public override void Init()
     {
         beginPos = new Vector2Int(16, 14);
-        speed = 0.3f;
+        initSpeed = 0.3f;
         
         base.Init();
     }
@@ -46,15 +46,12 @@ public class Raymond : Enemy
         ScatterLogic();
     }
 
-    //targetNode 좌표로 a*알고리즘을 통해 이동
-    public override void Move(Node targetNode)
+    //먹혔을 때, 하위 객체 (rosa, raymond, ...)에서 어디 방향으로 이동할 지 정하기.
+    public override void EatenMove()
     {
-        
-        PathFinding(T.CurrentMap[currentPos.x, currentPos.y], targetNode);
-        if(FinalNodeList.Count>0)
-            SetDirection();
-        StartCoroutine(MoveTo());
-        
+        base.EatenMove();
+        if(!isMove)
+            base.Move(T.CurrentMap[28, 13]);
     }
 
     #region Raymond 타겟 찾는 함수들
@@ -108,7 +105,7 @@ public class Raymond : Enemy
             }
         }
 
-        if(!found) Debug.Log("Not Found!!");
+        if(!found) Debug.Log("Not Found!! in Raymond!");
 
         /*
         //알고리즘 시각적으로 확인용

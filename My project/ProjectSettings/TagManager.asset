@@ -6,6 +6,7 @@ TagManager:
   tags:
   - cookie
   - powercookie
+  - enemy
   layers:
   - Default
   - TransparentFX

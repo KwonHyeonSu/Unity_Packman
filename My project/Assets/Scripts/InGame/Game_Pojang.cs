@@ -5,6 +5,8 @@ using UnityEngine.UI;
 
 public class Game_Pojang : MonoBehaviour
 {
+
+    //게임 내 오브젝트들 컨트롤
     public Player player;
 
     [SerializeField]
@@ -18,13 +20,14 @@ public class Game_Pojang : MonoBehaviour
 
     public List<GameObject> Obj_life = new List<GameObject>(); 
 
+
+    //현재 맵에서 몬스터만 지나갈 수 있는 길  리스트 - 22.01.11
+    public List<Node> only_Monster = new List<Node>();
+
     void Start()
     {
-        
-
         //게임 시작 전, 변수 할당
         Ready();
-        
     }
 
     
@@ -42,8 +45,8 @@ public class Game_Pojang : MonoBehaviour
         Panel_Pause.SetActive(false);
 
         T.score = 100;
-        T.stage = 2;
-        T.life = 3;
+        //T.stage = "포장마차"; - MapManager클래스에서 할당하도록.
+        T.life = 2;
 
 
         //플레이어 할당
@@ -67,8 +70,7 @@ public class Game_Pojang : MonoBehaviour
         catch{ Debug.LogWarning("_Raymond_ 없음"); }
 
 
-        //모든 캐릭터 wait 상태
-        SetAllCharactorState("Wait");
+        
 
         //Enemy의 game_pojang변수 할당 
         foreach(var e in enemies)
@@ -76,8 +78,26 @@ public class Game_Pojang : MonoBehaviour
             e.game_Pojang = this.GetComponent<Game_Pojang>();
         }
 
+        //몬스터만 지나다닐 수 있는 Exception 길 설정- 22.01.11
+        Only_Monster_Setting();
+
+
+        //모든 변수 할당을 완료하고, 게임 시작 준비
+        ResetGame();
+    }
+
+    void ResetGame()
+    {
+        //모든 캐릭터 wait 상태
+        SetAllCharactorState("Wait");
+
+        //모든 플레이어 제자리
+        player.Reset();
+        foreach(var e in enemies) e.Reset();
+
         //GameState -> Ready
         T.currentGameState = GameState.Ready;
+
         Debug.Log("게임 대기중... 아무 키나 입력하세요");
     }
 
@@ -92,6 +112,7 @@ public class Game_Pojang : MonoBehaviour
                 SetAllCharactorState("Run");
                 //SetAllCharactorState("Scatter");
                 //SetAllCharactorState("Frightened");
+                //SetAllCharactorState("Eaten");
 
                 Debug.Log("게임을 시작합니다!");
             }
@@ -111,10 +132,10 @@ public class Game_Pojang : MonoBehaviour
     void TextUpdate()
     {
         txt_score.text = "SCORE : " + T.score;
-        txt_stage.text = "STAGE : " + T.stage;
+        txt_stage.text = "STAGE : " + T.stage.ToString();
     }
 
-    #if UNITY_EDITOR
+    #if UNITY_EDITOR //pc 디버깅 모드에만 키 받을 수 있게
     void KeyboardInput()
     {
         if(Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKey(KeyCode.W)) Up();
@@ -157,16 +178,51 @@ public class Game_Pojang : MonoBehaviour
                 foreach(var e in enemies) e.SetStateThis(e.frightend);
                 break;
 
+            //Frightened는 Enemies에게만 적용 - 22.01.10
+            case "Eaten":
+                foreach(var e in enemies) e.SetStateThis(e.eaten);
+                break;
+
         }
         
     }
 
-    void LifeDiscount()
+    //몬스터만 지나다닐 수 있는 길 리스트 설정 - 22.01.11
+    
+    private void Only_Monster_Setting()
     {
+        
+        if(only_Monster.Count > 0) only_Monster.Clear();
+
+        //포장마차 맵에서의 예외부분
+        if(T.stage == "포장마차")
+        {
+            only_Monster.Add(T.CurrentMap[25, 13]);
+            only_Monster.Add(T.CurrentMap[26, 13]);
+            only_Monster.Add(T.CurrentMap[27, 13]);
+            only_Monster.Add(T.CurrentMap[28, 13]);
+
+            only_Monster.Add(T.CurrentMap[26, 14]);
+            only_Monster.Add(T.CurrentMap[27, 14]);
+
+            only_Monster.Add(T.CurrentMap[26, 15]);
+            only_Monster.Add(T.CurrentMap[27, 15]);
+
+            Debug.Log("포장마차 예외 벽 설정 완료 (" + only_Monster.Count + "개의 노드)");
+        }
+    }
+
+    #region <게임 상태 변화 [점수, 목숨]>
+    
+    //<플레이어 사망> - 22.01.11 (수정)
+    public void LifeDiscount()
+    {
+
         if(T.life > 0)
         {
+            Obj_life[T.life-1].SetActive(false);
             T.life--;
-            Obj_life[Obj_life.Count-1].SetActive(false);
+            ResetGame();
         }
 
         //게임오버!
@@ -174,12 +230,21 @@ public class Game_Pojang : MonoBehaviour
         {
             GameOver();
         }
+
     }
+
+    //겁에 질린 적을 먹었을 때
+    public void Score_Up()
+    {
+        T.score += 100;
+    }
+
+    #endregion
     
     //by 현수 - GameOver() 채우기 - 22.01.10
     void GameOver()
     {
-
+        Debug.LogError("게임오버!");
     }
 
     #region 버튼

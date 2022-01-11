@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 using System.IO;
 
 //by 현수 - Map정보가 담긴 Txt파일을 불러와 배열에 저장.
@@ -31,7 +32,7 @@ public class MapManager : MonoBehaviour
     public GameObject cookiePref;
     public GameObject powerCookiePref;
 
-    void Start()
+    void OnEnable()
     {
         //Pojang - text 맵파일 불러오고, Node 2차원 배열 초기화 22-01-10
         T.CurrentMap = T.PojangArr;
@@ -40,15 +41,39 @@ public class MapManager : MonoBehaviour
         Debug.Log("맵 불러오기 완료");
 
         //Pojang맵에 쿠키 배치 22.01.08
+        //원하지 않는 곳에 생성하지 않도록 수정 - 22.01.11
         Cookies(T.PojangArr);
         Debug.Log("쿠키 배치 완료");
     }
 
-    //모든 길에 쿠키 배치 22.01.08
+
+    #region 모든 길에 쿠키 배치 22.01.08
+    List<Tuple<int, int>> ExceptionPosList = new List<Tuple<int, int>>(); //wall이 되었으면 하는 리스트
+
     public void Cookies(Node[,] map, int powerCookie = 5)
     {
         List<Node> mapNode = new List<Node>();
         GameObject parentObj = new GameObject();
+
+        //Exception 인덱싱
+        if(T.stage == "포장마차")
+        {
+        
+            ExceptionPosList.Clear();
+            string[] indexing = T.pojang_exception_wall.Split('\n');
+            foreach(var a in indexing)
+            {
+                string [] s = a.Split(',');
+                Tuple<int, int> tmp = new Tuple<int, int>(int.Parse(s[0]), int.Parse(s[1]));
+                if(!ExceptionPosList.Contains(tmp))
+                {
+                    ExceptionPosList.Add(new Tuple<int, int>(int.Parse(s[0]), int.Parse(s[1])));
+                }
+            
+            }
+
+        }
+
 
         parentObj.name = "Cookies";
 
@@ -56,12 +81,9 @@ public class MapManager : MonoBehaviour
         {
             for(int j=0;j<map.GetLength(1);j++)
             {
-                if(!map[i,j].wall)
+                if(!map[i,j].wall && !ExceptionPosList.Contains(new Tuple<int, int>(i,j)))
                 {
                     mapNode.Add(map[i,j]);
-
-                    
-
                 }
             }
         }
@@ -72,7 +94,7 @@ public class MapManager : MonoBehaviour
         {
             //파워쿠키 생성
             if(arr.Contains(i)){
-                GameObject tmp = Instantiate(powerCookiePref, new Vector3(mapNode[i].x, mapNode[i].y, 0), Quaternion.identity);
+                GameObject tmp = Instantiate(powerCookiePref, new Vector3(mapNode[i].x, mapNode[i].y, 5), Quaternion.identity);
                 tmp.name = "Power Cookies(" + mapNode[i].x + ", " + mapNode[i].y + ")";
                 tmp.gameObject.transform.parent = parentObj.transform;
             }
@@ -80,7 +102,7 @@ public class MapManager : MonoBehaviour
 
             //일반쿠키 생성
             else{
-                GameObject tmp = Instantiate(cookiePref, new Vector3(mapNode[i].x, mapNode[i].y, 0), Quaternion.identity);
+                GameObject tmp = Instantiate(cookiePref, new Vector3(mapNode[i].x, mapNode[i].y, 5), Quaternion.identity);
                 tmp.name = "Cookies(" + mapNode[i].x + ", " + mapNode[i].y + ")";
                 tmp.gameObject.transform.parent = parentObj.transform;
             }
@@ -94,13 +116,16 @@ public class MapManager : MonoBehaviour
 
         while(re.Count != num)
         {
-            int curNum = Random.Range(0, count);
+            int curNum = UnityEngine.Random.Range(0, count);
             if(re.Contains(curNum)) continue;
             else re.Add(curNum);
         }
         return re;
     }
 
+    #endregion
+    
+    
     //name에 해당하는 맵을 불러온 후, Node화 하여 초기화하는 메서드
     public void GetMap(string name)
     {
@@ -127,6 +152,8 @@ public class MapManager : MonoBehaviour
 
                 T.PojangArr[x,y] = tmpNode;
             }
+
+            T.stage = "포장마차";
         }
 
     }

@@ -7,7 +7,7 @@ public class Enemy : Charactor
     public Game_Pojang game_Pojang;
 
     //상태 정리
-    private enum EnemyState
+    protected enum EnemyState
     {
         Wait, // 게임 시작 전
         Run, // 게임 중
@@ -18,6 +18,8 @@ public class Enemy : Charactor
 
     //각 상태에 따른 행동 state를 보관
     private Dictionary<EnemyState, IState> dicState = new Dictionary<EnemyState, IState>();
+
+    private Coroutine coroutine; //22.01.11 - 코루틴 제어용 (Frightened)
 
     public override void Start()
     {
@@ -46,19 +48,29 @@ public class Enemy : Charactor
         //달리는 상태
         if(stateMachine.CurrentState == run)
         {
+            SetSpeed();
             RunLogic();
         }
 
         //scatter 상태
         else if(stateMachine.CurrentState == scatter)
         {
+            SetSpeed();
             ScatterLogic();
         }
 
         //frightened 상태
         else if(stateMachine.CurrentState == frightend)
         {
+            SetSpeed();
             FrightenedLogic();
+        }
+
+        //eaten 상태
+        else if(stateMachine.CurrentState == eaten)
+        {
+            SetSpeed(0.08f);
+            EatenLogic();
         }
     }
 
@@ -69,6 +81,7 @@ public class Enemy : Charactor
 
     }
     #endregion
+
 
     #region <SCATTER>
     // by 현수 - Scatter() 경찰별로 재정의하기 - 22.01.10
@@ -85,24 +98,123 @@ public class Enemy : Charactor
             Move(scatterRoutine[n]);
         
         }
+
+        
     }
 
     #endregion
-    
-    #region <FRIGHTENED>
-    //frightened 상태일 때는, Scatter상태로 움직인다.
+
+
+    #region <FRIGHTENED> by 현수 22.01.11
+
     public virtual void FrightenedLogic()
     {
-        animator.Play("Frightened_1");
+        if(null == coroutine)
+        {
+            //애니메이션 변경 코드
+            coroutine = StartCoroutine(FrightenedAnimRoutine(4.0f, 3.0f));
+        }
     }
+    float _fright_1_time = 0.0f; //fright_1_time - 피버타임_1 시간
+    float _fright_2_time = 0.0f; //fright_2_time - 피버타임_2 시간
+
+    //frightened 상태일 때는, Scatter상태로 움직인다.
+    //일정 시간이 지나면 원래대로 돌아오도록 - 22.01.11
+    
+    IEnumerator FrightenedAnimRoutine(float fright_1_time, float fright_2_time)
+    {
+        _fright_1_time = 0.0f;
+        _fright_2_time = 0.0f;
+
+        animator.Play("Frightened_1");
+        //fright_1
+        while(_fright_1_time < fright_1_time)
+        {
+            _fright_1_time += Time.deltaTime;
+            yield return null;
+        }
+
+        //fright_2
+        animator.Play("Frightened_2");
+        while(_fright_2_time < fright_2_time)
+        {
+            _fright_2_time += Time.deltaTime;
+            yield return null;
+        }
+
+        //시간이 끝나면 run 상태로
+        SetStateThis(run);
+        coroutine = null;
+        yield return null;
+    }
+
+    
     #endregion
+
+
+    #region <EATEN> -22.01.11 by 현수 [frightened모드에서 먹혔을 때]
+    
+    //eaten 스프라이트
+    public virtual void EatenLogic()
+    {
+        EatenAnim();
+        EatenMove();
+    }
+
+
+    //먹혔을 때, 하위 객체 (rosa, raymond, ...)에서 어디 방향으로 이동할 지 정하기.
+    public virtual void EatenMove()
+    {
+
+        //먹히고 난 후, 목표위치에 도달하면 Run상태로 바뀌기
+        if(T.stage == "포장마차") //(26, 15), (27,15) -> 입구 좌표
+        {
+            if(T.CurrentMap[currentPos.x, currentPos.y] == T.CurrentMap[26, 15]
+            || T.CurrentMap[currentPos.x, currentPos.y] == T.CurrentMap[27, 15])
+            {
+                stateMachine.SetState(run);
+                animator.enabled = true;
+            }
+        }
+    }
+    
+    
+    private void EatenAnim()
+    {
+        switch(direction)
+        {
+            case Direction.Up:
+                sprite = eaten_Sprites[0] as Sprite;
+                break;
+            
+            case Direction.Down:
+                sprite = eaten_Sprites[1] as Sprite;
+                break;
+            
+            case Direction.Right:
+                sprite = eaten_Sprites[2] as Sprite;
+                break;
+            
+            case Direction.Left:
+                sprite = eaten_Sprites[3] as Sprite;
+                break;
+        }
+
+        //애니메이터를 끄고 스프라이트로.
+        animator.enabled = false;
+
+        GetComponent<SpriteRenderer>().sprite = sprite;
+    }
+
+    #endregion
+
     public virtual void Move(Node targetNode)
     {
 
         PathFinding(T.CurrentMap[currentPos.x, currentPos.y], targetNode);
         if(FinalNodeList.Count>0)
             SetDirection();
-        StartCoroutine(MoveTo());
+        moveCoroutine = StartCoroutine(MoveTo());
 
     }
 
@@ -118,13 +230,18 @@ public class Enemy : Charactor
             else if(T.Direction2D(Direction.Left) == toDir) direction = Direction.Left;
             else if(T.Direction2D(Direction.Right) == toDir) direction = Direction.Right;
         }
-        
     }
-
 
     public void SetStateThis(IState state)
     {
         stateMachine.SetState(state);
+    }
+
+    // 속도 초기화
+    public void SetSpeed(float _speed = 0)
+    {
+        if(_speed == 0) speed = initSpeed;
+        else speed = _speed;
     }
 
     // 한 칸당 움직임과 애니메이션 방향도 정한다.
@@ -206,24 +323,31 @@ public class Enemy : Charactor
 
     void OpenListAdd(int checkX, int checkY)
     {
-        //범위 / 벽 체크
-        if(checkX >= 0 && checkY >= 0 && checkX < T.CurrentMap.GetLength(0) && checkY < T.CurrentMap.GetLength(1)
-        && !T.CurrentMap[checkX, checkY].wall && !ClosedList.Contains(T.CurrentMap[checkX, checkY]))
+        //범위 체크
+        if(checkX >= 0 && checkY >= 0 && checkX < T.CurrentMap.GetLength(0) && checkY < T.CurrentMap.GetLength(1))
         {
-            Node NeighborNode = T.CurrentMap[checkX, checkY];
-            int MoveCost = CurNode.g + 1;
-
-            //이동 비용이 이웃노드 g보다 작거나 열린리스트에 이웃노드가 없다면 g,h ,parent설정후 openlist에 추가
-            if(MoveCost < NeighborNode.g || !OpenList.Contains(NeighborNode))
+            //벽 체크
+            if((!T.CurrentMap[checkX, checkY].wall /*|| game_Pojang.only_Monster.Contains(T.CurrentMap[checkX, checkY])*/
+                && !ClosedList.Contains(T.CurrentMap[checkX, checkY])))
             {
-                NeighborNode.g = MoveCost;
-                NeighborNode.h = (Mathf.Abs(NeighborNode.x - TargetNode.x) + Mathf.Abs(NeighborNode.y - TargetNode.y));
-                NeighborNode.Parent = CurNode;
+                Node NeighborNode = T.CurrentMap[checkX, checkY];
+                int MoveCost = CurNode.g + 1;
 
-                OpenList.Add(NeighborNode);
+                //이동 비용이 이웃노드 g보다 작거나 열린리스트에 이웃노드가 없다면 g,h ,parent설정후 openlist에 추가
+                if(MoveCost < NeighborNode.g || !OpenList.Contains(NeighborNode))
+                {
+                    NeighborNode.g = MoveCost;
+                    NeighborNode.h = (Mathf.Abs(NeighborNode.x - TargetNode.x) + Mathf.Abs(NeighborNode.y - TargetNode.y));
+                    NeighborNode.Parent = CurNode;
+
+                    OpenList.Add(NeighborNode);
+                }
             }
+
         }
+
     }
+
 
     //경로 확인용 - 22.01.10
     protected virtual void OnDrawGizmos()

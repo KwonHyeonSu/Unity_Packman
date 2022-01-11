@@ -9,7 +9,7 @@ public class Amy : Enemy
     public override void Init()
     {
         beginPos = new Vector2Int(31, 16);
-        speed = 0.3f;
+        initSpeed = 0.3f;
         
         base.Init();
 
@@ -59,15 +59,13 @@ public class Amy : Enemy
         ScatterLogic();
     }
 
-    //targetNode 좌표로 a*알고리즘을 통해 이동
-    public override void Move(Node targetNode)
+    //먹혔을 때, 하위 객체 (rosa, raymond, ...)에서 어디 방향으로 이동할 지 정하기.
+    public override void EatenMove()
     {
+        base.EatenMove();
         
-        PathFinding(T.CurrentMap[currentPos.x, currentPos.y], targetNode);
-        if(FinalNodeList.Count>0)
-            SetDirection();
-        StartCoroutine(MoveTo());
-        
+        if(!isMove)
+            base.Move(T.CurrentMap[26, 13]);
     }
 
     //경로 확인용 - 22.01.10
