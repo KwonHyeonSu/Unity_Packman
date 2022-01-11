@@ -13,35 +13,38 @@ public class Player : Charactor
         Die,
     }
 
-    //상태기계 클래스객체
-    public StateMachine stateMachine;
     
     //각 상태에 따른 행동 state를 보관
     private Dictionary<PlayerState, IState> dicState = new Dictionary<PlayerState, IState>();
+    public Game_Pojang game_Pojang;
+
     public override void Start()
     {
         base.Start();
 
         dicState.Add(PlayerState.Wait, wait);
         dicState.Add(PlayerState.Run, run);
-        dicState.Add(PlayerState.Die, die);
 
         stateMachine = new StateMachine(wait);
+        if(null == game_Pojang)
+        {
+            game_Pojang = GameObject.Find("[PojangManager]").GetComponent<Game_Pojang>();
+        }
     }
 
     public override void Init()
     {
         beginPos = new Vector2Int(20, 8);
         currentPos = beginPos;
-        speed = 0.3f;
+        speed = 0.1f;
 
         base.Init();
     }
 
     void Update()
     {   
-        //움직임 상태일 때
-        if(stateMachine.CurrentState == run)
+        //wait이 아닐 때
+        if(stateMachine.CurrentState != wait)
             Move();
     }
 
@@ -106,10 +109,20 @@ public class Player : Charactor
             T.score += 5;
         }
 
+        //파워 쿠키 먹었을 때
+        else if(other.gameObject.tag == "powercookie")
+        {
+            other.gameObject.SetActive(false);
+            game_Pojang.SetAllCharactorState("Frightened");
+
+        }
+
         else if(other.gameObject.tag == "enemy")
         {
             
         }
+
+        
     }
 
     //상태 적용 메서드 - 22.01.09

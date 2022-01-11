@@ -8,7 +8,7 @@ public class Game_Pojang : MonoBehaviour
     public Player player;
 
     [SerializeField]
-    private List<Enemy> enemies = new List<Enemy>();
+    public List<Enemy> enemies = new List<Enemy>();
 
     public GameObject Panel_Pause;
 
@@ -21,13 +21,6 @@ public class Game_Pojang : MonoBehaviour
     void Start()
     {
         
-
-        Panel_Pause.SetActive(false);
-
-        //나중에 수정하기
-        T.score = 100;
-        T.stage = 2;
-        T.life = 3;
 
         //게임 시작 전, 변수 할당
         Ready();
@@ -45,6 +38,14 @@ public class Game_Pojang : MonoBehaviour
     //Ready() - 게임 시작 전, 변수 할당 22.01.09
     void Ready()
     {
+        //게임 오브젝트 / 변수 초기화 - 22.01.10
+        Panel_Pause.SetActive(false);
+
+        T.score = 100;
+        T.stage = 2;
+        T.life = 3;
+
+
         //플레이어 할당
         if(null == player)
         {
@@ -53,37 +54,27 @@ public class Game_Pojang : MonoBehaviour
         
         //enemies에 4명의 경찰 할당
 
-        try{
-            enemies.Add(GameObject.Find("_Rosa_").GetComponent<Enemy>());
-        }
-        catch{
-            Debug.LogWarning("_Rosa_ 없음");
-        }
+        try{ enemies.Add(GameObject.Find("_Rosa_").GetComponent<Enemy>()); }
+        catch{ Debug.LogWarning("_Rosa_ 없음"); }
 
-        try{
-            enemies.Add(GameObject.Find("_Emy_").GetComponent<Enemy>());
-        }
-        catch{
-            Debug.LogWarning("_Emy_ 없음");
-        }
+        try{ enemies.Add(GameObject.Find("_Amy_").GetComponent<Enemy>()); }
+        catch{ Debug.LogWarning("_Emy_ 없음");}
 
-        try{
-            enemies.Add(GameObject.Find("_Jake_").GetComponent<Enemy>());
-        }
-        catch{
-            Debug.LogWarning("_Jake_ 없음");
-        }
+        try{ enemies.Add(GameObject.Find("_Jake_").GetComponent<Enemy>()); }
+        catch{ Debug.LogWarning("_Jake_ 없음");}
 
-        try{
-            enemies.Add(GameObject.Find("_Raymond_").GetComponent<Enemy>());
-        }
-        catch{
-            Debug.LogWarning("_Raymond_ 없음");
-        }
+        try{ enemies.Add(GameObject.Find("_Raymond_").GetComponent<Enemy>()); }
+        catch{ Debug.LogWarning("_Raymond_ 없음"); }
 
 
         //모든 캐릭터 wait 상태
         SetAllCharactorState("Wait");
+
+        //Enemy의 game_pojang변수 할당 
+        foreach(var e in enemies)
+        {
+            e.game_Pojang = this.GetComponent<Game_Pojang>();
+        }
 
         //GameState -> Ready
         T.currentGameState = GameState.Ready;
@@ -99,6 +90,8 @@ public class Game_Pojang : MonoBehaviour
             if(Input.anyKeyDown) {
                 T.currentGameState = GameState.Playing;
                 SetAllCharactorState("Run");
+                //SetAllCharactorState("Scatter");
+                //SetAllCharactorState("Frightened");
 
                 Debug.Log("게임을 시작합니다!");
             }
@@ -134,7 +127,7 @@ public class Game_Pojang : MonoBehaviour
 
     //게임 내 모든 캐릭터들의 상태를 설정 - 22.01.09
     //파라미터 : "Wait" , "Run"
-    void SetAllCharactorState(string stateName)
+    public void SetAllCharactorState(string stateName)
     {   
         
         switch(stateName)
@@ -149,6 +142,19 @@ public class Game_Pojang : MonoBehaviour
                 //Run 상태
                 player.SetStateThis(player.run);
                 foreach(var e in enemies) e.SetStateThis(e.run);
+                break;
+
+
+            //scatter는 Enemies에게만 적용
+            case "Scatter": //22.01.10 in cafe
+                //Scatter 상태
+                foreach(var e in enemies) e.SetStateThis(e.scatter);
+                break;
+
+
+            //Frightened는 Enemies에게만 적용 - 22.01.10
+            case "Frightened":
+                foreach(var e in enemies) e.SetStateThis(e.frightend);
                 break;
 
         }

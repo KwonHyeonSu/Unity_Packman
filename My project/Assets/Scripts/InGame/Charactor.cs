@@ -13,7 +13,7 @@ public class Charactor : MonoBehaviour
     protected Vector2Int beginPos;
 
     [SerializeField]
-    protected Vector2Int currentPos;
+    public Vector2Int currentPos;
 
     [SerializeField]
     protected Vector2Int endPos;
@@ -24,24 +24,28 @@ public class Charactor : MonoBehaviour
     //상태 관련
     public IState wait = new StateWait();
     public IState run = new StateRun();
-    public IState die = new StateDie();
-    protected IState fear_first = new StateFear_First();
-    protected IState fear_last = new StateFear_Last();
+    public IState scatter = new StateScatter();
+    public IState eaten = new StateEaten();
+    public IState frightend = new StateFrightend();
 
     //애니메이션
     [HideInInspector]
     public Animator animator;
 
+    //상태기계 클래스객체
+    protected StateMachine stateMachine;
+
     public virtual void Start()
     {
         Init();
     }
-
+/*
     // Update is called once per frame
     void Update()
     {
-        
+        stateMachine.DoOperateUpdate();
     }
+*/
 
     //하위 클래스에서 꼭 작성하기. Player.cs의 Init()함수를 참고
     public virtual void Init()
@@ -52,9 +56,14 @@ public class Charactor : MonoBehaviour
         animator.Play("Down");
 
         transform.position = new Vector2(beginPos.x, beginPos.y);
+
     }
 
+    
+
 }
+
+
 
 //상태에 따른 행동을 내리는 클래스
 public class StateMachine
@@ -96,8 +105,6 @@ public interface IState
     void OperateExit();
 }
 
-
-
 //게임 시작 전, 기다리는 상태
 public class StateWait : IState
 {
@@ -116,7 +123,23 @@ public class StateWait : IState
 }
 
 //움직이는 상태
-public class StateRun : IState
+public class StateRun : MonoBehaviour, IState 
+{
+    public void OperateEnter()
+    {
+
+    }
+    public void OperateUpdate()
+    {
+
+    }
+    public void OperateExit()
+    {
+
+    }
+}
+
+public class StateScatter : IState
 {
     public void OperateEnter()
     {
@@ -132,7 +155,7 @@ public class StateRun : IState
     }
 }
 
-public class StateDie : IState
+public class StateFrightend : IState
 {
     public void OperateEnter()
     {
@@ -148,23 +171,7 @@ public class StateDie : IState
     }
 }
 
-public class StateFear_First : IState
-{
-    public void OperateEnter()
-    {
-
-    }
-    public void OperateUpdate()
-    {
-
-    }
-    public void OperateExit()
-    {
-
-    }
-}
-
-public class StateFear_Last : IState
+public class StateEaten : IState
 {
     public void OperateEnter()
     {

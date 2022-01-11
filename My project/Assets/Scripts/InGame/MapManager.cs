@@ -29,6 +29,7 @@ public class MapManager : MonoBehaviour
     //Node [,] PojangArr = new Node[41, 32]; -> Define으로 이동 22.01.07
 
     public GameObject cookiePref;
+    public GameObject powerCookiePref;
 
     void Start()
     {
@@ -44,9 +45,11 @@ public class MapManager : MonoBehaviour
     }
 
     //모든 길에 쿠키 배치 22.01.08
-    public void Cookies(Node[,] map)
+    public void Cookies(Node[,] map, int powerCookie = 5)
     {
+        List<Node> mapNode = new List<Node>();
         GameObject parentObj = new GameObject();
+
         parentObj.name = "Cookies";
 
         for(int i=0;i<map.GetLength(0);i++)
@@ -55,13 +58,47 @@ public class MapManager : MonoBehaviour
             {
                 if(!map[i,j].wall)
                 {
-                    GameObject tmp = Instantiate(cookiePref, new Vector3(i, j, 0), Quaternion.identity);
-                    tmp.name = "Cookies(" + i + ", " + j + ")";
-                    tmp.gameObject.transform.parent = parentObj.transform;
+                    mapNode.Add(map[i,j]);
+
+                    
 
                 }
             }
         }
+
+        //by 현수 - 쿠키 및 파워쿠키 배치 - 22.01.10
+        List<int> arr = FindUnDuplicated(mapNode.Count, 5);
+        for(int i=0;i<mapNode.Count;i++)
+        {
+            //파워쿠키 생성
+            if(arr.Contains(i)){
+                GameObject tmp = Instantiate(powerCookiePref, new Vector3(mapNode[i].x, mapNode[i].y, 0), Quaternion.identity);
+                tmp.name = "Power Cookies(" + mapNode[i].x + ", " + mapNode[i].y + ")";
+                tmp.gameObject.transform.parent = parentObj.transform;
+            }
+
+
+            //일반쿠키 생성
+            else{
+                GameObject tmp = Instantiate(cookiePref, new Vector3(mapNode[i].x, mapNode[i].y, 0), Quaternion.identity);
+                tmp.name = "Cookies(" + mapNode[i].x + ", " + mapNode[i].y + ")";
+                tmp.gameObject.transform.parent = parentObj.transform;
+            }
+        }
+    }
+
+    //count개수에서 num만큼 중복없이 뽑는다. (파워쿠키 생성용) - 22.01.10
+    List<int> FindUnDuplicated(int count, int num)
+    {
+        List<int> re = new List<int>();
+
+        while(re.Count != num)
+        {
+            int curNum = Random.Range(0, count);
+            if(re.Contains(curNum)) continue;
+            else re.Add(curNum);
+        }
+        return re;
     }
 
     //name에 해당하는 맵을 불러온 후, Node화 하여 초기화하는 메서드

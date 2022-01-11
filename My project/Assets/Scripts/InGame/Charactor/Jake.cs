@@ -2,15 +2,16 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Rosa : Enemy
+//by 현수 - Jake 로직
+//플레이어와의 위치 차이가 반경 8 이상일경우 Chase, 아닐경우 Scatter
+public class Jake : Enemy
 {
     public override void Init()
     {
-        beginPos = new Vector2Int(22, 16);
+        beginPos = new Vector2Int(5, 8);
         speed = 0.3f;
         
         base.Init();
-
     }
 
     public override void RunLogic()
@@ -24,24 +25,22 @@ public class Rosa : Enemy
         if(scatterRoutine.Count == 0)
         {
             //scatter모드일때 어디를 찍을것인지
-            scatterRoutine.Add(T.PojangArr[2, 29]);
-            scatterRoutine.Add(T.PojangArr[16, 29]);
-            scatterRoutine.Add(T.PojangArr[16, 17]);
-            scatterRoutine.Add(T.PojangArr[2, 17]);
+            scatterRoutine.Add(T.PojangArr[2, 10]);
+            scatterRoutine.Add(T.PojangArr[19, 11]);
+            scatterRoutine.Add(T.PojangArr[19, 2]);
+            scatterRoutine.Add(T.PojangArr[13, 2]);
         }
 
         base.ScatterLogic();
     }
-    
-    
-    //frightened 상태일 때는, Scatter상태로 움직인다.
+
+    //frightened 상태일 때는, Scatter상태로 움직인다. - 22.01.10
     public override void FrightenedLogic()
     {
         base.FrightenedLogic();
         ScatterLogic();
     }
 
-    //targetNode 좌표로 a*알고리즘을 통해 이동
     public override void Move(Node targetNode)
     {
         if(!isMove)
@@ -56,7 +55,6 @@ public class Rosa : Enemy
     protected override void OnDrawGizmos()
     {
         if(FinalNodeList.Count != 0) for (int i = 0; i < FinalNodeList.Count - 1; i++)
-            Debug.DrawLine(new Vector2(FinalNodeList[i].x, FinalNodeList[i].y), new Vector2(FinalNodeList[i + 1].x, FinalNodeList[i + 1].y), Color.red);
+            Debug.DrawLine(new Vector2(FinalNodeList[i].x, FinalNodeList[i].y), new Vector2(FinalNodeList[i + 1].x, FinalNodeList[i + 1].y), Color.green);
     }
 }
-
