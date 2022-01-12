@@ -38,7 +38,7 @@ public class Player : Charactor
     {
         beginPos = new Vector2Int(20, 8);
         currentPos = beginPos;
-        initSpeed = 0.1f;
+        initSpeed = 0.2f;
 
         base.Init();
     }
@@ -109,6 +109,7 @@ public class Player : Charactor
         {
             other.gameObject.SetActive(false);
             T.score += 5;
+            game_Pojang.soundManager.PlayAudio("eating");
         }
 
         //파워 쿠키 먹었을 때
@@ -116,6 +117,7 @@ public class Player : Charactor
         {
             other.gameObject.SetActive(false);
             game_Pojang.SetAllCharactorState("Frightened");
+            game_Pojang.soundManager.PlayAudio("eating_powerCookie");
 
         }
 
@@ -137,6 +139,7 @@ public class Player : Charactor
             {
                 e.SetStateThis(e.eaten); //적 상태 변화
                 game_Pojang.Score_Up(); //점수 올리기
+                game_Pojang.soundManager.PlayAudio("eating_ghost");
             }
         }
 

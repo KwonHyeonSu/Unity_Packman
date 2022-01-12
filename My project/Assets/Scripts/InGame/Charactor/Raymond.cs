@@ -7,7 +7,7 @@ public class Raymond : Enemy
 {
     public override void Init()
     {
-        beginPos = new Vector2Int(16, 14);
+        beginPos = new Vector2Int(27, 13);
         initSpeed = 0.3f;
         
         base.Init();

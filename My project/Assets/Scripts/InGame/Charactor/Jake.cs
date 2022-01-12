@@ -9,7 +9,7 @@ public class Jake : Enemy
     private int shyDistance = 14;
     public override void Init()
     {
-        beginPos = new Vector2Int(5, 8);
+        beginPos = new Vector2Int(28, 13);
         initSpeed = 0.3f;
         
         base.Init();

@@ -18,7 +18,10 @@ public class Game_Pojang : MonoBehaviour
     public Text txt_score;
     public Text txt_stage;
 
-    public List<GameObject> Obj_life = new List<GameObject>(); 
+    public List<GameObject> Obj_life = new List<GameObject>();
+
+    //소리 - 22.01.12
+    public SoundManager soundManager;
 
 
     //현재 맵에서 몬스터만 지나갈 수 있는 길  리스트 - 22.01.11
@@ -41,7 +44,7 @@ public class Game_Pojang : MonoBehaviour
     //Ready() - 게임 시작 전, 변수 할당 22.01.09
     void Ready()
     {
-        //게임 오브젝트 / 변수 초기화 - 22.01.10
+        //-----게임 오브젝트 / 변수 초기화 - 22.01.10-----
         Panel_Pause.SetActive(false);
 
         T.score = 100;
@@ -67,16 +70,21 @@ public class Game_Pojang : MonoBehaviour
         catch{ Debug.LogWarning("_Jake_ 없음");}
 
         try{ enemies.Add(GameObject.Find("_Raymond_").GetComponent<Enemy>()); }
-        catch{ Debug.LogWarning("_Raymond_ 없음"); }
-
-
-        
+        catch{ Debug.LogWarning("_Raymond_ 없음"); }        
 
         //Enemy의 game_pojang변수 할당 
         foreach(var e in enemies)
         {
             e.game_Pojang = this.GetComponent<Game_Pojang>();
         }
+
+        //소리 할당 - 22.01.12
+        if(null == soundManager)
+        {
+            soundManager = GameObject.Find("[SoundManager]").GetComponent<SoundManager>();
+            soundManager.PlayAudio("beginning");
+        }
+
 
         //몬스터만 지나다닐 수 있는 Exception 길 설정- 22.01.11
         Only_Monster_Setting();
@@ -108,6 +116,9 @@ public class Game_Pojang : MonoBehaviour
         if(T.currentGameState == GameState.Ready)
         {
             if(Input.anyKeyDown) {
+                //beginning 사운드 멈추기
+                soundManager.audioSource.Stop();
+
                 T.currentGameState = GameState.Playing;
                 SetAllCharactorState("Run");
                 //SetAllCharactorState("Scatter");
@@ -175,7 +186,14 @@ public class Game_Pojang : MonoBehaviour
 
             //Frightened는 Enemies에게만 적용 - 22.01.10
             case "Frightened":
-                foreach(var e in enemies) e.SetStateThis(e.frightend);
+                foreach(var e in enemies)
+                {
+                    //달리는 상태일 때나 Frightened 상태일 때만 Frightend 상태 적용 - 22.01.12
+                    if(e.stateMachine.CurrentState == e.run || e.stateMachine.CurrentState == e.frightend)
+                    {
+                        e.SetStateThis(e.frightend);
+                    }
+                }
                 break;
 
             //Frightened는 Enemies에게만 적용 - 22.01.10
@@ -217,6 +235,7 @@ public class Game_Pojang : MonoBehaviour
     //<플레이어 사망> - 22.01.11 (수정)
     public void LifeDiscount()
     {
+        soundManager.PlayAudio("death"); //죽었을 때 소리 추가 - 22.01.12
 
         if(T.life > 0)
         {
@@ -229,6 +248,7 @@ public class Game_Pojang : MonoBehaviour
         else if(T.life == 0)
         {
             GameOver();
+            
         }
 
     }
@@ -244,7 +264,9 @@ public class Game_Pojang : MonoBehaviour
     //by 현수 - GameOver() 채우기 - 22.01.10
     void GameOver()
     {
-        Debug.LogError("게임오버!");
+        T.currentGameState = GameState.End;
+        GameManager.Instance.GoToScene("Main");
+        
     }
 
     #region 버튼

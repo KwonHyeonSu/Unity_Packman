@@ -48,6 +48,7 @@ public class Enemy : Charactor
         //달리는 상태
         if(stateMachine.CurrentState == run)
         {
+            Display_Currentstate = "run";
             SetSpeed();
             RunLogic();
         }
@@ -55,6 +56,7 @@ public class Enemy : Charactor
         //scatter 상태
         else if(stateMachine.CurrentState == scatter)
         {
+            Display_Currentstate = "scater";
             SetSpeed();
             ScatterLogic();
         }
@@ -62,6 +64,7 @@ public class Enemy : Charactor
         //frightened 상태
         else if(stateMachine.CurrentState == frightend)
         {
+            Display_Currentstate = "frightened";
             SetSpeed();
             FrightenedLogic();
         }
@@ -69,6 +72,7 @@ public class Enemy : Charactor
         //eaten 상태
         else if(stateMachine.CurrentState == eaten)
         {
+            Display_Currentstate = "eaten";
             SetSpeed(0.08f);
             EatenLogic();
         }
@@ -134,16 +138,21 @@ public class Enemy : Charactor
             yield return null;
         }
 
-        //fright_2
-        animator.Play("Frightened_2");
-        while(_fright_2_time < fright_2_time)
+        //fright_2 - 22.01.12 수정 (run상태인 enemy는 제외)
+        if(stateMachine.CurrentState == frightend)
         {
-            _fright_2_time += Time.deltaTime;
-            yield return null;
+            animator.Play("Frightened_2");
+            while(_fright_2_time < fright_2_time)
+            {
+                _fright_2_time += Time.deltaTime;
+                yield return null;
+            }
+            
+            //시간이 끝나면 run 상태로
+            SetStateThis(run);
         }
-
-        //시간이 끝나면 run 상태로
-        SetStateThis(run);
+        
+        
         coroutine = null;
         yield return null;
     }
@@ -157,6 +166,7 @@ public class Enemy : Charactor
     //eaten 스프라이트
     public virtual void EatenLogic()
     {
+        SetStateThis(eaten);
         EatenAnim();
         EatenMove();
     }
@@ -172,7 +182,7 @@ public class Enemy : Charactor
             if(T.CurrentMap[currentPos.x, currentPos.y] == T.CurrentMap[26, 15]
             || T.CurrentMap[currentPos.x, currentPos.y] == T.CurrentMap[27, 15])
             {
-                stateMachine.SetState(run);
+                SetStateThis(run);
                 animator.enabled = true;
             }
         }

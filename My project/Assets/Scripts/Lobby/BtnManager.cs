@@ -26,9 +26,12 @@ public class BtnManager : MonoBehaviour
         Debug.Log("Ranking Clicked");
     }   
 
+    //22.01.12 수정
     public void Btn_Play()
     {
-        SceneManager.LoadScene("Loading");
+        //SceneManager.LoadScene("Loading");
+
+        GameManager.instance.GoToScene("Game1"); //로딩 후 포장마차 맵으로
 
     }
 

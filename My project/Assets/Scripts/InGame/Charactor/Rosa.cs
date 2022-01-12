@@ -7,11 +7,10 @@ public class Rosa : Enemy
 {
     public override void Init()
     {
-        beginPos = new Vector2Int(22, 16);
+        beginPos = new Vector2Int(25, 13);
         initSpeed = 0.3f;
         
         base.Init();
-
     }
 
     public override void RunLogic()

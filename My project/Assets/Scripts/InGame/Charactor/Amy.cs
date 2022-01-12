@@ -8,7 +8,7 @@ public class Amy : Enemy
     private List<Node> Routine = new List<Node>();
     public override void Init()
     {
-        beginPos = new Vector2Int(31, 16);
+        beginPos = new Vector2Int(26, 13);
         initSpeed = 0.3f;
         
         base.Init();

@@ -40,6 +40,7 @@ public class Charactor : MonoBehaviour
 
     //상태기계 클래스객체
     public StateMachine stateMachine;
+    public string Display_Currentstate = "";
 
     public virtual void Start()
     {
